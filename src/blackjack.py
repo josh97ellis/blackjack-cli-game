@@ -1,28 +1,89 @@
 import sys
 import time
+import os
 
 import scenarios
+from config import Configuration
 from utils import play_again
 from cards2 import Shoe, Hand, Chips
 
-print('Welcome to my Blackjack Game, Good Luck! \n')
-
 # Ask player to purchase chips
 player_chips = Chips()
+amount = int(input('How many chips would you like to purchase?: '))
+player_chips.purchase_chips(value=amount)
+
+print('')
+print('Welcome to my Blackjack Game, Good Luck!\n')
+
+# Congiure table rules
+game_config = Configuration(f'{os.getcwd()}\game_config.yaml')
+MIN_BET = game_config.get_value('minimum_bet')
+MAX_BET = game_config.get_value('maximum_bet')
+NUM_DECKS = game_config.get_value('decks_in_shoe')
+SOFT_17 = game_config.get_value('soft_17')
+BLACKJACK_PAYOUT = game_config.get_value('blackjack_payout')
+
+# Print game rules
+print('Table Rules:')
+print(f'-> Minimum Bet: {MIN_BET}')
+print(f'-> Maximum Bet: {MAX_BET}')
+print(f'-> Number of Decks: {NUM_DECKS}')
+print(f'-> Soft 17: {SOFT_17}')
+print(f'-> Blackjack Payout: {BLACKJACK_PAYOUT}')
+print('')
+
+# Confirm play
+play = input('Would you like to play the game? (y/n):')
+if play == 'n':
+    print('Goodbye!')
+    sys.exit()
 
 # Create a shoe of decks for the game
-shoe = Shoe(num_decks=8)
+shoe = Shoe(num_decks=NUM_DECKS)
 shoe.shuffle()
+burner_card = shoe.deal_card()
 
 while True:
-    print('Starting a New Game, Good Luck! \n')
+    print('')
+    print('-------------------------------')
+    print('Starting a New Game, Good Luck!')
+    print('-------------------------------')
     
-    # Player make bet
     print(f'Current chip total: ${player_chips.total} \n')
+    
+    # Check if the player has enough chips to play the game
+    if player_chips.total < MIN_BET:
+        while player_chips.total < MIN_BET:
+            purchase_more = input(f"You do not have enough chips to play, minimum is ${MIN_BET}. Would you like to purchase more chips? (y/n):")
+            print('')
+            if purchase_more == 'y':
+                amount = int(input('How many chips would you like to purchase?: '))
+                player_chips.purchase_chips(value=amount)
+                print(f'Current chip total: ${player_chips.total} \n')
+            else:
+                print("Goodbye!")
+                sys.exit()
+    
+    # Have player make their bet
     player_chips.bet = int(input("How much would you like to bet? Minimum is $5: "))
+    
+    # Check that the bet is not more than the total chips the player has
     if player_chips.bet > player_chips.total:
-        print(f"${player_chips.bet} is more than what you have. Bet must not exceed ${player_chips.total}! \n")
-        continue
+        while player_chips.bet > player_chips.total:
+            print(f"${player_chips.bet} is more than what you have. Bet must not exceed ${player_chips.total}! \n")
+            player_chips.bet = int(input(f"How much would you like to bet?: "))
+    
+    # Check that the bet is not less than the table minimum
+    if player_chips.bet < MIN_BET:
+        while player_chips.bet < MIN_BET:
+            print(f"${player_chips.bet} is less than the table minimum. Bet must be at least ${MIN_BET}! \n")
+            player_chips.bet = int(input(f"How much would you like to bet?: "))
+    
+    # Check that the bet is not less than the table minimum
+    if player_chips.bet > MAX_BET:
+        while player_chips.bet > MAX_BET:
+            print(f"${player_chips.bet} is more than the table maximum. Bet must not exceed ${MAX_BET}! \n")
+            player_chips.bet = int(input(f"How much would you like to bet?: "))
     
     # Initial deal: 1 to player, 1 to dealer (down), 1 to player, 1 to dealer (up)
     player_hand = Hand()
@@ -96,7 +157,8 @@ while True:
     print('Dealer Hand:')
     dealer_hand.display_cards(show_all=True)
     time.sleep(3)
-    while dealer_hand.value < 17:
+    
+    while dealer_hand.value < 17 if SOFT_17 == 'stand' else 18:
         dealer_hand.add_card(shoe.deal_card())
         dealer_hand.display_cards(show_all=True)
         if dealer_hand.value > 21:

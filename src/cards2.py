@@ -95,8 +95,11 @@ class Hand:
 
 class Chips:
     def __init__(self):
-        self.total = int(input('Purchase Chips Amount: '))
+        self.total = 0
         self.bet = 0
+    
+    def purchase_chips(self, value: int):
+        self.total += value
     
     def make_bet(self, value: int):
         self.bet += value

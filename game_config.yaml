@@ -1,5 +1,5 @@
 minimum_bet: 5
 maximum_bet: 250
-number_of_decks: 3
+decks_in_shoe: 3
 blackjack_payout: 3/2
-soft_17: 'stand'
+soft_17: 'hit'
