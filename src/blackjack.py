@@ -5,7 +5,8 @@ import os
 import scenarios
 from config import Configuration
 from utils import play_again
-from cards2 import Shoe, Hand, Chips
+from cards import Shoe
+from player import Chips, Hand
 
 # Ask player to purchase chips
 player_chips = Chips()
@@ -118,6 +119,7 @@ while True:
         if play_again():
             continue
         else:
+            print('Goodbye!')
             sys.exit()
     
     # Handle scenario where the player gets a blackjack and dealer does not
@@ -139,17 +141,18 @@ while True:
             if player_hand.value > 21:
                 scenarios.player_busts(player_chips)
                 player_hand.is_bust = True
-                break
+                break  # Stops dealing
             else:
-                continue
+                continue  # continues dealing
         else:
-            break
+            break  # Stops dealing
     
     # Ask to play another game if player hand has busted
     if player_hand.is_bust:
         if play_again():
             continue
         else:
+            print('Goodbye!')
             sys.exit()
     
     # Continue play with dealer until hand is complete
@@ -158,7 +161,12 @@ while True:
     dealer_hand.display_cards(show_all=True)
     time.sleep(3)
     
-    while dealer_hand.value < 17 if SOFT_17 == 'stand' else 18:
+    if SOFT_17 == 'stand':
+        dealer_plays_until = 17
+    else:
+        dealer_plays_until = 18
+    
+    while dealer_hand.value < dealer_plays_until:
         dealer_hand.add_card(shoe.deal_card())
         dealer_hand.display_cards(show_all=True)
         if dealer_hand.value > 21:
@@ -175,6 +183,7 @@ while True:
         if play_again():
             continue
         else:
+            print('Goodbye!')
             sys.exit()
     
     # If neither the dealer or player have busted, compare the hand values to determine winner
@@ -189,4 +198,5 @@ while True:
     if play_again():
             continue
     else:
+        print('Goodbye!')
         sys.exit()

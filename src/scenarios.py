@@ -1,4 +1,13 @@
-from cards2 import Chips
+"""
+Functions for handling different ending scenarios of a
+game of Blackjack
+"""
+from player import Chips
+import os
+from config import Configuration
+
+# Table rules for blackjack payout value
+game_config = Configuration(f'{os.getcwd()}\game_config.yaml')
 
 
 def player_busts(chips: Chips) -> None:
@@ -9,7 +18,7 @@ def player_busts(chips: Chips) -> None:
 def player_wins(chips: Chips, blackjack=False):
     if blackjack:
         print("Blackjack!")
-        chips.win_bet(chips.bet * (3/2))
+        chips.win_bet(chips.bet * (float(eval(game_config.get_value('blackjack_payout')))))
     else:
         print("Player wins!")
         chips.win_bet(chips.bet)
