@@ -4,6 +4,7 @@ game of Blackjack
 """
 from player import Chips
 import os
+from playsound import playsound
 from config import Configuration
 
 # Table rules for blackjack payout value
@@ -22,11 +23,14 @@ def player_wins(chips: Chips, blackjack=False):
     else:
         print("Player wins!")
         chips.win_bet(chips.bet)
+    
+    playsound('casino_sounds/mixkit-coin-win-notification-1992.wav')
 
 
 def dealer_busts(chips: Chips):
     print("Dealer busts!")
     chips.win_bet(chips.bet)
+    playsound('casino_sounds/mixkit-coin-win-notification-1992.wav')
 
 
 def dealer_wins(chips: Chips):

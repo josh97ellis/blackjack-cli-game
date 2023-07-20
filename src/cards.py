@@ -2,6 +2,7 @@
 Objects relating to a playing card: a card, a deck, and a shoe
 """
 import random
+from playsound import playsound
 
 ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
 suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
@@ -64,8 +65,17 @@ class Shoe:
         for deck in self.decks:
             deck.shuffle()
     
-    def deal_card(self):
+    def deal_card(self, sound=True, show=True):
         if len(self.decks) > 0:
-            return self.decks[-1].deal_card()
+            card = self.decks[-1].deal_card()
+            if show:
+                print(f'{card.__str__()} \n')
+            else:
+                print(f'????? \n')
+            
+            if sound:
+                playsound('casino_sounds/mixkit-poker-card-placement-2001.wav')
+            
+            return card
         else:
             return None

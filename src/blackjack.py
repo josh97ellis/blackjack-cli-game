@@ -1,6 +1,7 @@
 import sys
 import time
 import os
+from playsound import playsound
 
 import scenarios
 from config import Configuration
@@ -12,6 +13,7 @@ from player import Chips, Hand
 player_chips = Chips()
 amount = int(input('How many chips would you like to purchase?: '))
 player_chips.purchase_chips(value=amount)
+playsound('casino_sounds/mixkit-coins-sound-2003.wav')
 
 print('')
 print('Welcome to my Blackjack Game, Good Luck!\n')
@@ -39,10 +41,12 @@ if play == 'n':
     print('Goodbye!')
     sys.exit()
 
+playsound('casino_sounds/mixkit-casino-bling-achievement-2067.wav')
+
 # Create a shoe of decks for the game
 shoe = Shoe(num_decks=NUM_DECKS)
 shoe.shuffle()
-burner_card = shoe.deal_card()
+burner_card = shoe.deal_card(show=False, sound=False)
 
 while True:
     print('')
@@ -67,6 +71,7 @@ while True:
     
     # Have player make their bet
     player_chips.bet = int(input("How much would you like to bet? Minimum is $5: "))
+    playsound('casino_sounds/mixkit-coins-sound-2003.wav')
     
     # Check that the bet is not more than the total chips the player has
     if player_chips.bet > player_chips.total:
@@ -89,13 +94,19 @@ while True:
     # Initial deal: 1 to player, 1 to dealer (down), 1 to player, 1 to dealer (up)
     player_hand = Hand()
     dealer_hand = Hand()
+    print('player card:'); player_hand.add_card(shoe.deal_card())
+    time.sleep(.25)
+    print('dealer card:')
+    dealer_hand.add_card(shoe.deal_card(show=False))
+    time.sleep(.25)
+    print('player card:')
     player_hand.add_card(shoe.deal_card())
+    time.sleep(.25)
+    print('dealer card:')
     dealer_hand.add_card(shoe.deal_card())
-    player_hand.add_card(shoe.deal_card())
-    dealer_hand.add_card(shoe.deal_card())
+    time.sleep(.25)
     
     # Show hand to player
-    print('')
     print('Your Hand:')
     player_hand.display_cards(show_all=True)
     time.sleep(1)
@@ -168,6 +179,7 @@ while True:
     
     while dealer_hand.value < dealer_plays_until:
         dealer_hand.add_card(shoe.deal_card())
+        time.sleep(.25)
         dealer_hand.display_cards(show_all=True)
         if dealer_hand.value > 21:
             scenarios.dealer_busts(player_chips)
@@ -196,7 +208,7 @@ while True:
     
     # Ask to play another game
     if play_again():
-            continue
+        continue
     else:
         print('Goodbye!')
         sys.exit()
