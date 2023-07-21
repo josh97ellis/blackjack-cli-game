@@ -3,6 +3,7 @@ Obejcts relating to physical things that a player requires
 to play a game of blackjack, such as a a hand of cards and chips
 """
 from cards import Card
+from playsound import playsound
 
 
 class Hand:
@@ -37,9 +38,11 @@ class Chips:
     
     def purchase_chips(self, value: int):
         self.total += value
+        playsound('src/static/mixkit-coins-sound-2003.wav')
     
     def make_bet(self, value: int):
         self.bet += value
+        playsound('src/static/mixkit-coins-sound-2003.wav')
     
     def win_bet(self, value: int):
         self.total += value

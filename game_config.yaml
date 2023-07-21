@@ -1,5 +1,12 @@
-minimum_bet: 5
-maximum_bet: 250
-decks_in_shoe: 3
-blackjack_payout: 3/2
-soft_17: 'hit'
+game_rules:
+  - minimum_bet: 5
+    maximum_bet: 250
+    decks_in_shoe: 3
+    blackjack_payout: "3/2"
+    soft_17: "hit"
+
+sounds:
+  - coins_pay: "src/static/mixkit-coins-sound-2003.wav"
+    coins_win: "src/static/mixkit-coin-win-notification-1992.wav"
+    place_card: "src/static/mixkit-poker-card-placement-2001.wav"
+    casino_bling: "src/static/mixkit-casino-bling-achievement-2067.wav"

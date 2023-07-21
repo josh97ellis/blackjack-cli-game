@@ -3,6 +3,9 @@ Objects relating to a playing card: a card, a deck, and a shoe
 """
 import random
 from playsound import playsound
+from config import Configuration
+
+_config = Configuration('game_config.yaml')
 
 ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
 suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
@@ -65,16 +68,20 @@ class Shoe:
         for deck in self.decks:
             deck.shuffle()
     
-    def deal_card(self, sound=True, show=True):
+    def deal_card(self, sound=True, show=True, side='front'):
+        if side not in ['front', 'back']:
+            raise ValueError(f'{side} is not a valid value for side')
+        
         if len(self.decks) > 0:
             card = self.decks[-1].deal_card()
             if show:
-                print(f'{card.__str__()} \n')
-            else:
-                print(f'????? \n')
+                if side == 'front':
+                    print(f'{card.__str__()} \n')
+                else:
+                    print(f'????? \n')
             
             if sound:
-                playsound('casino_sounds/mixkit-poker-card-placement-2001.wav')
+                playsound(_config.get_value('sounds')[0]['place_card'])
             
             return card
         else:

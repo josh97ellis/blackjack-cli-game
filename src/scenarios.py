@@ -3,12 +3,11 @@ Functions for handling different ending scenarios of a
 game of Blackjack
 """
 from player import Chips
-import os
 from playsound import playsound
 from config import Configuration
 
 # Table rules for blackjack payout value
-game_config = Configuration(f'{os.getcwd()}\game_config.yaml')
+game_config = Configuration('game_config.yaml')
 
 
 def player_busts(chips: Chips) -> None:
@@ -24,13 +23,13 @@ def player_wins(chips: Chips, blackjack=False):
         print("Player wins!")
         chips.win_bet(chips.bet)
     
-    playsound('casino_sounds/mixkit-coin-win-notification-1992.wav')
+    playsound('src/static/mixkit-coin-win-notification-1992.wav')
 
 
 def dealer_busts(chips: Chips):
     print("Dealer busts!")
     chips.win_bet(chips.bet)
-    playsound('casino_sounds/mixkit-coin-win-notification-1992.wav')
+    playsound('src/static/mixkit-coin-win-notification-1992.wav')
 
 
 def dealer_wins(chips: Chips):

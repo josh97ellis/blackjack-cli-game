@@ -1,30 +1,22 @@
 import sys
 import time
-import os
 from playsound import playsound
 
 import scenarios
 from config import Configuration
-from utils import play_again
+from utils import play_again, confirm_play
 from cards import Shoe
 from player import Chips, Hand
 
-# Ask player to purchase chips
-player_chips = Chips()
-amount = int(input('How many chips would you like to purchase?: '))
-player_chips.purchase_chips(value=amount)
-playsound('casino_sounds/mixkit-coins-sound-2003.wav')
-
-print('')
 print('Welcome to my Blackjack Game, Good Luck!\n')
 
 # Congiure table rules
-game_config = Configuration(f'{os.getcwd()}\game_config.yaml')
-MIN_BET = game_config.get_value('minimum_bet')
-MAX_BET = game_config.get_value('maximum_bet')
-NUM_DECKS = game_config.get_value('decks_in_shoe')
-SOFT_17 = game_config.get_value('soft_17')
-BLACKJACK_PAYOUT = game_config.get_value('blackjack_payout')
+game_config = Configuration('game_config.yaml')
+MIN_BET = game_config.get_value('game_rules')[0]['minimum_bet']
+MAX_BET = game_config.get_value('game_rules')[0]['maximum_bet']
+NUM_DECKS = game_config.get_value('game_rules')[0]['decks_in_shoe']
+SOFT_17 = game_config.get_value('game_rules')[0]['soft_17']
+BLACKJACK_PAYOUT = game_config.get_value('game_rules')[0]['blackjack_payout']
 
 # Print game rules
 print('Table Rules:')
@@ -36,17 +28,17 @@ print(f'-> Blackjack Payout: {BLACKJACK_PAYOUT}')
 print('')
 
 # Confirm play
-play = input('Would you like to play the game? (y/n):')
-if play == 'n':
-    print('Goodbye!')
-    sys.exit()
-
-playsound('casino_sounds/mixkit-casino-bling-achievement-2067.wav')
+confirm_play()
 
 # Create a shoe of decks for the game
 shoe = Shoe(num_decks=NUM_DECKS)
 shoe.shuffle()
 burner_card = shoe.deal_card(show=False, sound=False)
+
+# Ask player to purchase chips
+player_chips = Chips()
+amount = int(input('How many chips would you like to purchase?: '))
+player_chips.purchase_chips(value=amount)
 
 while True:
     print('')
@@ -70,8 +62,8 @@ while True:
                 sys.exit()
     
     # Have player make their bet
-    player_chips.bet = int(input("How much would you like to bet? Minimum is $5: "))
-    playsound('casino_sounds/mixkit-coins-sound-2003.wav')
+    bet_amount = int(input("How much would you like to bet? Minimum is $5: "))
+    player_chips.make_bet(bet_amount)
     
     # Check that the bet is not more than the total chips the player has
     if player_chips.bet > player_chips.total:
@@ -94,26 +86,38 @@ while True:
     # Initial deal: 1 to player, 1 to dealer (down), 1 to player, 1 to dealer (up)
     player_hand = Hand()
     dealer_hand = Hand()
-    print('player card:'); player_hand.add_card(shoe.deal_card())
-    time.sleep(.25)
-    print('dealer card:')
-    dealer_hand.add_card(shoe.deal_card(show=False))
-    time.sleep(.25)
+    
     print('player card:')
-    player_hand.add_card(shoe.deal_card())
+    card = shoe.deal_card(side='front')
+    player_hand.add_card(card)
     time.sleep(.25)
+    
     print('dealer card:')
-    dealer_hand.add_card(shoe.deal_card())
+    card = shoe.deal_card(side='back')
+    dealer_hand.add_card(card)
+    time.sleep(.25)
+    
+    print('player card:')
+    card = shoe.deal_card(side='front')
+    player_hand.add_card(card)
+    time.sleep(.25)
+    
+    print('dealer card:')
+    card = shoe.deal_card(side='front')
+    dealer_hand.add_card(card)
     time.sleep(.25)
     
     # Show hand to player
     print('Your Hand:')
     player_hand.display_cards(show_all=True)
-    time.sleep(1)
     print('')
+    time.sleep(.5)
+    
+    # Show dealers face up card to player
     print('Dealer Showing:')
     dealer_hand.display_cards(show_all=False)
     print('')
+    time.sleep(.5)
     
     # Insurance if dealers face up card is an Ace
     if 'Ace' in dealer_hand.cards[1].rank:
@@ -146,7 +150,6 @@ while True:
         action = input('Hit or Stand?: ').lower()
         if action == 'hit':
             player_hand.add_card(shoe.deal_card())
-            print('')
             print('Player Hand:')
             player_hand.display_cards()
             if player_hand.value > 21:
