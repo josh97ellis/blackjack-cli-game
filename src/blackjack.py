@@ -8,7 +8,10 @@ from utils import play_again, confirm_play
 from cards import Shoe
 from player import Chips, Hand
 
+_config = Configuration('game_config.yaml')
+
 print('Welcome to my Blackjack Game, Good Luck!\n')
+playsound(_config.get_value('sounds')[0]['casino_bling'])
 
 # Congiure table rules
 game_config = Configuration('game_config.yaml')
@@ -37,8 +40,7 @@ burner_card = shoe.deal_card(show=False, sound=False)
 
 # Ask player to purchase chips
 player_chips = Chips()
-amount = int(input('How many chips would you like to purchase?: '))
-player_chips.purchase_chips(value=amount)
+player_chips.purchase_chips()
 
 while True:
     print('')
@@ -47,6 +49,7 @@ while True:
     print('-------------------------------')
     
     print(f'Current chip total: ${player_chips.total} \n')
+    player_chips.bet = 0
     
     # Check if the player has enough chips to play the game
     if player_chips.total < MIN_BET:
@@ -54,34 +57,32 @@ while True:
             purchase_more = input(f"You do not have enough chips to play, minimum is ${MIN_BET}. Would you like to purchase more chips? (y/n):")
             print('')
             if purchase_more == 'y':
-                amount = int(input('How many chips would you like to purchase?: '))
-                player_chips.purchase_chips(value=amount)
+                player_chips.purchase_chips()
                 print(f'Current chip total: ${player_chips.total} \n')
             else:
                 print("Goodbye!")
                 sys.exit()
     
     # Have player make their bet
-    bet_amount = int(input("How much would you like to bet? Minimum is $5: "))
-    player_chips.make_bet(bet_amount)
+    player_chips.make_bet()
     
     # Check that the bet is not more than the total chips the player has
     if player_chips.bet > player_chips.total:
         while player_chips.bet > player_chips.total:
             print(f"${player_chips.bet} is more than what you have. Bet must not exceed ${player_chips.total}! \n")
-            player_chips.bet = int(input(f"How much would you like to bet?: "))
+            player_chips.make_bet()
     
     # Check that the bet is not less than the table minimum
     if player_chips.bet < MIN_BET:
         while player_chips.bet < MIN_BET:
             print(f"${player_chips.bet} is less than the table minimum. Bet must be at least ${MIN_BET}! \n")
-            player_chips.bet = int(input(f"How much would you like to bet?: "))
+            player_chips.make_bet()
     
     # Check that the bet is not less than the table minimum
     if player_chips.bet > MAX_BET:
         while player_chips.bet > MAX_BET:
             print(f"${player_chips.bet} is more than the table maximum. Bet must not exceed ${MAX_BET}! \n")
-            player_chips.bet = int(input(f"How much would you like to bet?: "))
+            player_chips.make_bet()
     
     # Initial deal: 1 to player, 1 to dealer (down), 1 to player, 1 to dealer (up)
     player_hand = Hand()
@@ -133,17 +134,12 @@ while True:
         
         if play_again():
             continue
-        else:
-            print('Goodbye!')
-            sys.exit()
     
     # Handle scenario where the player gets a blackjack and dealer does not
     if player_hand.value == 21:
         scenarios.player_wins(player_chips, blackjack=True)
         if play_again():
             continue
-        else:
-            sys.exit()
 
     # Continue play with player until hand is complete
     while player_hand.value < 21:
@@ -165,9 +161,6 @@ while True:
     if player_hand.is_bust:
         if play_again():
             continue
-        else:
-            print('Goodbye!')
-            sys.exit()
     
     # Continue play with dealer until hand is complete
     print('')
@@ -191,15 +184,12 @@ while True:
         if dealer_hand.value > 17:
             break
         else:
-            time.sleep(3)
+            time.sleep(2.5)
     
     # Ask to play another game if dealer hand has busted
     if dealer_hand.is_bust:
         if play_again():
             continue
-        else:
-            print('Goodbye!')
-            sys.exit()
     
     # If neither the dealer or player have busted, compare the hand values to determine winner
     if player_hand.value > dealer_hand.value:
@@ -212,6 +202,3 @@ while True:
     # Ask to play another game
     if play_again():
         continue
-    else:
-        print('Goodbye!')
-        sys.exit()

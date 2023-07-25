@@ -36,12 +36,14 @@ class Chips:
         self.total = 0
         self.bet = 0
     
-    def purchase_chips(self, value: int):
-        self.total += value
+    def purchase_chips(self):
+        amt = input('How many chips would you like to purhcase?: $')
+        self.total += int(amt)
         playsound('src/static/mixkit-coins-sound-2003.wav')
     
-    def make_bet(self, value: int):
-        self.bet += value
+    def make_bet(self):
+        amt = input('How much would you like to bet?: $')
+        self.bet += int(amt)
         playsound('src/static/mixkit-coins-sound-2003.wav')
     
     def win_bet(self, value: int):
