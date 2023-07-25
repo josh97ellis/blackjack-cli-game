@@ -1,19 +1,19 @@
 # Python Blackjack CLI Game
 
 ### Description:
-PyBlackjack CLI Game is a fun and interactive Python-based command-line interface implementation of the classic casino card game, Blackjack. Also known as 21, the game allows players to challenge themselves against an AI dealer while experiencing the thrill of making strategic decisions to beat the house.
+PyBlackjack CLI Game is a fun and interactive Python-based command-line interface implementation of the classic casino card game, Blackjack.
 
 ### Features:
 - **Realistic Gameplay:** The game simulates an authentic Blackjack experience, complete with standard rules.
 - **User-Friendly Interface:** The command-line interface offers clear instructions and easy-to-understand prompts.
 - **Interactive Gameplay:** Players can interact with the game using simple commands, enabling them to hit, stand, double down, or split their cards.
-- **AI Dealer:** The game employs an AI-powered dealer that plays according to standard Blackjack rules, providing an engaging challenge for players.
 - **Bet System:** Implement a betting system, allowing players to place bets before each hand.
 - **Error Handling:** Implement robust error handling to prevent crashes and provide helpful error messages for users.
 
 ### Installation:
 1. Clone the repository.
-2. Install Python (version X.X or higher).
+2. [Optional] Create and activate a virtual environment
+2. Install Python (version 3.11.2 or higher).
 3. Install the required dependencies using pip.
 
 ### Usage:
