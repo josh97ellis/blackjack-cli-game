@@ -104,7 +104,7 @@ while True:
     time.sleep(.25)
     
     print('dealer card:')
-    card = shoe.deal_card(side='front')
+    card = shoe.deal_card(side='back')
     dealer_hand.add_card(card)
     time.sleep(.25)
     
@@ -121,7 +121,7 @@ while True:
     time.sleep(.5)
     
     # Insurance if dealers face up card is an Ace
-    if 'Ace' in dealer_hand.cards[1].rank:
+    if 'Ace' in dealer_hand.cards[0].rank:
         player_insurance = input('Insurance? y/n: ')
         
     # Handle scenarios where the deal has a blackjack

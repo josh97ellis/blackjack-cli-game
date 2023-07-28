@@ -23,7 +23,7 @@ class Card:
         else:
             self.value = int(rank)
     
-    def __str__(self):
+    def __repr__(self):
         return f"{self.rank} of {self.suit}"
 
 
@@ -32,57 +32,43 @@ class Deck:
         # Add a card to the deck for each suit and rank
         self.cards = [Card(rank, suit) for suit in suits for rank in ranks]
     
+    def __repr__(self):
+        return '\n'.join(str(card) for card in self.cards)
+    
     def shuffle(self):
         random.shuffle(self.cards)
-    
-    def __str__(self):
-        deck_str = ""
-        for card in self.cards:
-            deck_str += str(card) + "\n"
-        return deck_str
-    
-    def deal_card(self):
-        if len(self.cards) > 0:
-            return self.cards.pop()
-        else:
-            return None
-
-
-class Shoe:
-    def __init__(self, num_decks=6):
-        self.num_decks = num_decks
-        self.decks = []
-        
-        for _ in range(num_decks):
-            deck = Deck()
-            deck.shuffle()
-            self.decks.append(deck)
-    
-    def __str__(self):
-        shoe_str = ""
-        for deck in self.decks:
-            shoe_str += str(deck)
-        return shoe_str
-    
-    def shuffle(self):
-        for deck in self.decks:
-            deck.shuffle()
     
     def deal_card(self, sound=True, show=True, side='front'):
         if side not in ['front', 'back']:
             raise ValueError(f'{side} is not a valid value for side')
         
-        if len(self.decks) > 0:
-            card = self.decks[-1].deal_card()
-            if show:
-                if side == 'front':
-                    print(f'{card.__str__()} \n')
-                else:
-                    print(f'????? \n')
-            
-            if sound:
-                playsound(_config.get_value('sounds')[0]['place_card'])
-            
-            return card
-        else:
+        # Checks to ensure that cards still exist in the deck
+        if len(self.cards) == 0:
             return None
+        
+        # Remove top card
+        card = self.cards.pop(0)
+        
+        # Determine what side of the card should be shown
+        if show and side=='front':
+            print(f'{card.__str__()} \n')
+        elif show and side=='back':
+            print(f'????? \n')
+        
+        # Determine if a sound effect should be played when delt
+        if sound:
+            playsound(_config.get_value('sounds')[0]['place_card'])
+        
+        return card
+
+
+class Shoe(Deck):
+    def __init__(self, num_decks=6):
+        super().__init__()
+        if num_decks < 1:
+            raise ValueError("Number of decks must be at least 1.")
+        self.num_decks = num_decks
+        self.cards *= num_decks
+    
+    def __repr__(self):
+        return super().__repr__()

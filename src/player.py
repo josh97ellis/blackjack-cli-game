@@ -28,7 +28,7 @@ class Hand:
         if show_all:
             print(f'Cards: {[card.__str__() for card in self.cards]} -> Value: {self.value}')
         else:
-            print(f'Cards: {["?", self.cards[1].__str__()]}')
+            print(f'Cards: {[self.cards[1].__str__(), "?"]}')
 
 
 class Chips:
